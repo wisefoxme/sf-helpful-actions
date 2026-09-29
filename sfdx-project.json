@@ -1,0 +1,29 @@
+{
+  "packageDirectories": [
+    {
+      "path": "packages/get-record-type-id",
+      "default": true,
+      "package": "GetRecordTypeId",
+      "versionName": "1.0.0",
+      "versionNumber": "1.0.0.NEXT",
+      "definitionFile": "config/project-scratch-def.json"
+    },
+    {
+      "path": "packages/get-picklist-values",
+      "package": "GetPicklistValues",
+      "versionName": "1.0.0",
+      "versionNumber": "1.0.0.NEXT",
+      "definitionFile": "config/project-scratch-def.json"
+    }
+  ],
+  "name": "sf-helpful-actions",
+  "namespace": "",
+  "sfdcLoginUrl": "https://login.salesforce.com",
+  "sourceApiVersion": "67.0",
+  "packageAliases": {
+    "GetRecordTypeId": "0HoHs000000oQf4KAE",
+    "GetPicklistValues": "0HoHs000000oQf9KAE",
+    "GetRecordTypeId@1.0.0-1": "04tHs000000rc52IAA",
+    "GetPicklistValues@1.0.0-1": "04tHs000000rc57IAA"
+  }
+}
