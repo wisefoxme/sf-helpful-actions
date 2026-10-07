@@ -115,6 +115,8 @@ The action groups bulk invocations by object type and sends at most **50 records
 
 When matches exist, the action returns the **best match** (highest confidence) plus collections of all matching records and Ids, along with duplicate rule and matching rule API names.
 
+Optionally pass **Matching Rule API Names** to return only hits from those matching rules (developer names from `Datacloud.MatchResult.getRule()`). Salesforce still runs all active duplicate rules; this input filters what the Flow sees. Empty or omitted = all rules. If the allowlist excludes every hit, the row returns no duplicates (no error).
+
 ### When to use it
 
 - Check for duplicates **before** creating or updating a record in Flow  
@@ -128,6 +130,7 @@ Your org must have **active duplicate rules** on the objects you pass in; otherw
 | Flow input | Required | Description |
 |------------|----------|-------------|
 | Record | Yes | The record to check (any object with duplicate rules) |
+| Matching Rule API Names | No | Collection of matching rule **developer names**; only those rules’ hits are returned |
 
 | Flow output | Description |
 |-------------|-------------|
@@ -188,12 +191,12 @@ Scratch orgs should enable Person Accounts if you run the full test suite locall
 
 Packages are **Unlocked 2GP** (no namespace). Package and version aliases live in `sfdx-project.json` after you register them in a Dev Hub.
 
-**Install released versions (CLI)** — version `1.0.0.1` (`GetRecordTypeId@1.0.0-1`, `GetPicklistValues@1.0.0-1`, `FindPossibleDuplicates@1.0.0-1`):
+**Install released versions (CLI)** — utilities at `1.0.0.1`; Find Possible Duplicates latest is **`1.1.0.1`** (`FindPossibleDuplicates@1.1.0-1`, optional matching-rule filter):
 
 ```bash
 sf package install --package "GetRecordTypeId@1.0.0-1" --wait 20 --target-org <target>
 sf package install --package "GetPicklistValues@1.0.0-1" --wait 20 --target-org <target>
-sf package install --package "FindPossibleDuplicates@1.0.0-1" --wait 20 --target-org <target>
+sf package install --package "FindPossibleDuplicates@1.1.0-1" --wait 20 --target-org <target>
 ```
 
 **Install in the browser** — open the link while logged into the org where you want the package (or sign in when prompted). Replace `p0` with the subscriber package version Id (`04t…`) from `packageAliases` in `sfdx-project.json` when you publish a new version.
@@ -202,7 +205,8 @@ sf package install --package "FindPossibleDuplicates@1.0.0-1" --wait 20 --target
 |---------|-------------------------------------|----------------------------------|
 | Get Record Type ID `1.0.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc52IAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc52IAA) |
 | Get Picklist Values `1.0.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc57IAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc57IAA) |
-| Find Possible Duplicates `1.0.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5CIAQ) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5CIAQ) |
+| Find Possible Duplicates `1.1.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5HIAQ) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5HIAQ) |
+| Find Possible Duplicates `1.0.0.1` (prior) | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5CIAQ) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5CIAQ) |
 
 **Create new packages in Dev Hub** (once per package):
 

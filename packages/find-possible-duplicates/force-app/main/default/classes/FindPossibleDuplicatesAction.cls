@@ -41,26 +41,42 @@ public with sharing class FindPossibleDuplicatesAction {
         Integer start = 0; start < indexes.size(); start += MAX_RECORDS_PER_CALL
       ) {
         List<Integer> chunk = new List<Integer>();
-        List<SObject> records = new List<SObject>();
         for (
           Integer i = start;
           i < Math.min(start + MAX_RECORDS_PER_CALL, indexes.size());
           i++
         ) {
           chunk.add(indexes[i]);
-          records.add(requests[indexes[i]].record);
         }
-        findChunk(records, chunk, results);
+        findChunk(requests, chunk, results);
       }
     }
     return results;
   }
 
+  @TestVisible
+  private static Set<String> normalizeMatchingRuleFilter(List<String> names) {
+    if (names == null || names.isEmpty()) {
+      return null;
+    }
+    Set<String> allowed = new Set<String>();
+    for (String name : names) {
+      if (String.isNotBlank(name)) {
+        allowed.add(name);
+      }
+    }
+    return allowed.isEmpty() ? null : allowed;
+  }
+
   private static void findChunk(
-    List<SObject> records,
+    List<Request> requests,
     List<Integer> indexes,
     List<Result> results
   ) {
+    List<SObject> records = new List<SObject>();
+    for (Integer index : indexes) {
+      records.add(requests[index].record);
+    }
     List<FinderResult> found;
     try {
       found = finder.find(records);
@@ -72,14 +88,20 @@ public with sharing class FindPossibleDuplicatesAction {
       return;
     }
     for (Integer i = 0; i < indexes.size(); i++) {
-      fillResult(results[indexes[i]], records[i].Id, found[i]);
+      fillResult(
+        results[indexes[i]],
+        records[i].Id,
+        found[i],
+        normalizeMatchingRuleFilter(requests[indexes[i]].matchingRuleApiNames)
+      );
     }
   }
 
   private static void fillResult(
     Result result,
     Id inputId,
-    FinderResult found
+    FinderResult found,
+    Set<String> allowedMatchingRules
   ) {
     if (found.errorMessage != null) {
       result.errorMessage = found.errorMessage;
@@ -88,6 +110,12 @@ public with sharing class FindPossibleDuplicatesAction {
     Match best;
     Set<Id> seenIds = new Set<Id>();
     for (Match match : found.matches) {
+      if (
+        allowedMatchingRules != null &&
+        !allowedMatchingRules.contains(match.matchingRule)
+      ) {
+        continue;
+      }
       Id matchId = match.record.Id;
       if (matchId == inputId || seenIds.contains(matchId)) {
         continue;
@@ -116,6 +144,12 @@ public with sharing class FindPossibleDuplicatesAction {
       required=true
     )
     public SObject record;
+
+    @InvocableVariable(
+      label='Matching Rule API Names'
+      description='Optional. When set, only possible duplicates found by these matching rules (developer names) are returned. Leave empty to use all rules.'
+    )
+    public List<String> matchingRuleApiNames;
   }
 
   public class Result {

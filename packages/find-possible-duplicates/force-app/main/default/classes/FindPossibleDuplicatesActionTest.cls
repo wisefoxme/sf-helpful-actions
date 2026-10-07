@@ -115,6 +115,68 @@ private class FindPossibleDuplicatesActionTest {
   }
 
   @isTest
+  static void filterByMatchingRuleKeepsOnlyAllowedRule() {
+    Id lowId = fakeId(Contact.SObjectType, 1);
+    Id highId = fakeId(Contact.SObjectType, 2);
+    StubFinder stub = new StubFinder();
+    stub.matches = new List<FindPossibleDuplicatesAction.Match>{
+      match(lowId, 70, 'Rule_A', 'Matching_A'),
+      match(highId, 95, 'Rule_B', 'Matching_B')
+    };
+    FindPossibleDuplicatesAction.finder = stub;
+
+    FindPossibleDuplicatesAction.Result result = run(
+      new Contact(),
+      new List<String>{ 'Matching_A' }
+    );
+
+    Assert.isTrue(result.hasDuplicates);
+    Assert.areEqual(lowId, result.duplicateRecordId);
+    Assert.areEqual('Matching_A', result.matchingRuleName);
+    Assert.areEqual(new List<Id>{ lowId }, result.duplicateRecordIds);
+    Assert.areEqual(1, result.duplicateRecords.size());
+  }
+
+  @isTest
+  static void filterExcludingAllRulesReturnsNoDuplicates() {
+    StubFinder stub = new StubFinder();
+    stub.matches = new List<FindPossibleDuplicatesAction.Match>{
+      match(fakeId(Contact.SObjectType, 1), 95, 'Rule_B', 'Matching_B')
+    };
+    FindPossibleDuplicatesAction.finder = stub;
+
+    FindPossibleDuplicatesAction.Result result = run(
+      new Contact(),
+      new List<String>{ 'Nonexistent_Rule' }
+    );
+
+    Assert.isFalse(result.hasDuplicates);
+    Assert.isTrue(result.duplicateRecordIds.isEmpty());
+    Assert.isNull(result.errorMessage);
+  }
+
+  @isTest
+  static void emptyAllowlistSameAsUnfiltered() {
+    Id lowId = fakeId(Contact.SObjectType, 1);
+    Id highId = fakeId(Contact.SObjectType, 2);
+    StubFinder stub = new StubFinder();
+    stub.matches = new List<FindPossibleDuplicatesAction.Match>{
+      match(lowId, 70, 'Rule_A', 'Matching_A'),
+      match(highId, 95, 'Rule_B', 'Matching_B')
+    };
+    FindPossibleDuplicatesAction.finder = stub;
+
+    FindPossibleDuplicatesAction.Result unfiltered = run(new Contact());
+    FindPossibleDuplicatesAction.Result emptyList = run(
+      new Contact(),
+      new List<String>()
+    );
+
+    Assert.areEqual(unfiltered.duplicateRecordId, emptyList.duplicateRecordId);
+    Assert.areEqual(unfiltered.duplicateRecordIds, emptyList.duplicateRecordIds);
+  }
+
+  @isTest
   static void groupsByObjectAndChunksAndKeepsOrder() {
     StubFinder stub = new StubFinder();
     FindPossibleDuplicatesAction.finder = stub;
@@ -153,14 +215,31 @@ private class FindPossibleDuplicatesActionTest {
   }
 
   private static FindPossibleDuplicatesAction.Result run(SObject record) {
+    return run(record, null);
+  }
+
+  private static FindPossibleDuplicatesAction.Result run(
+    SObject record,
+    List<String> matchingRuleApiNames
+  ) {
     return FindPossibleDuplicatesAction.findDuplicates(
-      new List<FindPossibleDuplicatesAction.Request>{ request(record) }
+      new List<FindPossibleDuplicatesAction.Request>{
+        request(record, matchingRuleApiNames)
+      }
     )[0];
   }
 
   private static FindPossibleDuplicatesAction.Request request(SObject record) {
+    return request(record, null);
+  }
+
+  private static FindPossibleDuplicatesAction.Request request(
+    SObject record,
+    List<String> matchingRuleApiNames
+  ) {
     FindPossibleDuplicatesAction.Request request = new FindPossibleDuplicatesAction.Request();
     request.record = record;
+    request.matchingRuleApiNames = matchingRuleApiNames;
     return request;
   }
 
