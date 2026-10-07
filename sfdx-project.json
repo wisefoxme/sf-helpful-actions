@@ -32,6 +32,7 @@
     "GetPicklistValues": "0HoHs000000oQf9KAE",
     "GetRecordTypeId@1.0.0-1": "04tHs000000rc52IAA",
     "GetPicklistValues@1.0.0-1": "04tHs000000rc57IAA",
-    "FindPossibleDuplicates": "0HoHs000000oQfEKAU"
+    "FindPossibleDuplicates": "0HoHs000000oQfEKAU",
+    "FindPossibleDuplicates@1.0.0-1": "04tHs000000rc5CIAQ"
   }
 }

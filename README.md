@@ -188,11 +188,12 @@ Scratch orgs should enable Person Accounts if you run the full test suite locall
 
 Packages are **Unlocked 2GP** (no namespace). Package and version aliases live in `sfdx-project.json` after you register them in a Dev Hub.
 
-**Install released versions (CLI)** — version `1.0.0.1` (`GetRecordTypeId@1.0.0-1`, `GetPicklistValues@1.0.0-1`):
+**Install released versions (CLI)** — version `1.0.0.1` (`GetRecordTypeId@1.0.0-1`, `GetPicklistValues@1.0.0-1`, `FindPossibleDuplicates@1.0.0-1`):
 
 ```bash
 sf package install --package "GetRecordTypeId@1.0.0-1" --wait 20 --target-org <target>
 sf package install --package "GetPicklistValues@1.0.0-1" --wait 20 --target-org <target>
+sf package install --package "FindPossibleDuplicates@1.0.0-1" --wait 20 --target-org <target>
 ```
 
 **Install in the browser** — open the link while logged into the org where you want the package (or sign in when prompted). Replace `p0` with the subscriber package version Id (`04t…`) from `packageAliases` in `sfdx-project.json` when you publish a new version.
@@ -201,8 +202,7 @@ sf package install --package "GetPicklistValues@1.0.0-1" --wait 20 --target-org 
 |---------|-------------------------------------|----------------------------------|
 | Get Record Type ID `1.0.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc52IAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc52IAA) |
 | Get Picklist Values `1.0.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc57IAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc57IAA) |
-
-**Find Possible Duplicates** is registered in Dev Hub as `FindPossibleDuplicates`; a promoted subscriber version and install links will be added here after the first release (`1.0.0.1`).
+| Find Possible Duplicates `1.0.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5CIAQ) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5CIAQ) |
 
 **Create new packages in Dev Hub** (once per package):
 
