@@ -12,4 +12,7 @@ sf package create --name GetRecordTypeId --package-type Unlocked --no-namespace 
 sf package create --name GetPicklistValues --package-type Unlocked --no-namespace \
   --path packages/get-picklist-values --target-dev-hub "$DEVHUB"
 
+sf package create --name FindPossibleDuplicates --package-type Unlocked --no-namespace \
+  --path packages/find-possible-duplicates --target-dev-hub "$DEVHUB"
+
 echo "Commit sfdx-project.json packageAliases if the CLI updated them."

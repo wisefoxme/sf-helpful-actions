@@ -1,8 +1,8 @@
 # sf-helpful-actions
 
-Small, installable **Flow actions** that resolve Salesforce metadata at runtime: record type Ids and picklist options. Each action ships as its own **Unlocked package**, so you can install one or both without pulling in unrelated code.
+Small, installable **Flow actions** for common automation tasks: record type and picklist lookup at runtime, and duplicate detection via your org’s duplicate rules. Each action ships as its own **Unlocked package**, so you can install one or more without pulling in unrelated code.
 
-After installation, open Flow Builder and add an **Action** element. Both actions appear under the **Utilities** category.
+After installation, open Flow Builder and add an **Action** element. **Get Record Type ID** and **Get Picklist Values** appear under **Utilities**; **Find Possible Duplicates** appears under **Duplicate Management**.
 
 ---
 
@@ -102,12 +102,64 @@ Clear failures for unknown object, unknown field, non-picklist field, unknown re
 
 ---
 
+## Find Possible Duplicates
+
+**Package:** `FindPossibleDuplicates` · **Source:** `packages/find-possible-duplicates/`  
+**Flow action name:** Find Possible Duplicates
+
+### What it does
+
+Runs the **active duplicate rules** for the record’s object through `Datacloud.FindDuplicates` and returns possible matches. The input record can be saved or unsaved; a saved record is never reported as a duplicate of itself.
+
+The action groups bulk invocations by object type and sends at most **50 records per API call** (the Datacloud limit). When the object has no active duplicate rule, Datacloud throws a `HandledException`; the action catches that and sets **Error Message** on the result instead of failing the Flow.
+
+When matches exist, the action returns the **best match** (highest confidence) plus collections of all matching records and Ids, along with duplicate rule and matching rule API names.
+
+### When to use it
+
+- Check for duplicates **before** creating or updating a record in Flow  
+- Screen **unsaved** records built on a screen or from variables  
+- Run duplicate checks in a **loop** or on a collection (bulk-safe chunking)  
+
+Your org must have **active duplicate rules** on the objects you pass in; otherwise the action returns an error message per row.
+
+### Inputs and outputs
+
+| Flow input | Required | Description |
+|------------|----------|-------------|
+| Record | Yes | The record to check (any object with duplicate rules) |
+
+| Flow output | Description |
+|-------------|-------------|
+| Has Duplicates | True when at least one possible duplicate was found |
+| Duplicate Record | Best match (highest confidence); standard fields only |
+| Duplicate Record ID | Id of the best match |
+| Duplicate Records | All possible duplicates |
+| Duplicate Record IDs | Ids of all possible duplicates |
+| Match Confidence | Confidence of the best match, when the rule provides one |
+| Duplicate Rule Name | API name of the duplicate rule for the best match |
+| Matching Rule Name | API name of the matching rule for the best match |
+| Error Message | Why the search could not run (e.g. no active duplicate rule, missing record) |
+
+Bulk invocations are supported: one result row per input record, in order.
+
+### Errors
+
+- **No record was given.** — input record is null  
+- **No active duplicate rule** — surfaced in **Error Message** (Flow does not fault)  
+- Datacloud search failures — message in **Error Message** for that row  
+
+**Tests:** Integration tests that call real `Datacloud.FindDuplicates` expect the **Standard Contact Duplicate Rule** to be active (typical in Developer Edition and many sandboxes). Stub-based tests cover error handling, best-match selection, chunking, and ordering without Datacloud.
+
+---
+
 ## Repository layout
 
 | Path | Contents |
 |------|----------|
 | `packages/get-record-type-id/` | Apex invocable + tests for record type lookup |
 | `packages/get-picklist-values/` | Apex invocable + tests for picklist lookup |
+| `packages/find-possible-duplicates/` | Apex invocable + tests for duplicate detection |
 | `config/project-scratch-def.json` | Scratch org definition (includes Person Accounts for tests) |
 | `scripts/package/` | Optional shell helpers for Dev Hub packaging |
 
@@ -122,6 +174,8 @@ Deploy one package and run its tests:
 ```bash
 sf project deploy start --source-dir packages/get-record-type-id --test-level RunLocalTests --wait 30
 sf project deploy start --source-dir packages/get-picklist-values --test-level RunLocalTests --wait 30
+sf project deploy start --source-dir packages/find-possible-duplicates \
+  --test-level RunSpecifiedTests --tests FindPossibleDuplicatesActionTest --wait 30
 ```
 
 Scratch orgs should enable Person Accounts if you run the full test suite locally (`config/project-scratch-def.json`).
@@ -148,6 +202,8 @@ sf package install --package "GetPicklistValues@1.0.0-1" --wait 20 --target-org 
 | Get Record Type ID `1.0.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc52IAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc52IAA) |
 | Get Picklist Values `1.0.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc57IAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc57IAA) |
 
+**Find Possible Duplicates** is registered in Dev Hub as `FindPossibleDuplicates`; a promoted subscriber version and install links will be added here after the first release (`1.0.0.1`).
+
 **Create new packages in Dev Hub** (once per package):
 
 ```bash
@@ -156,6 +212,8 @@ sf package create --name GetRecordTypeId --package-type Unlocked --no-namespace 
   --path packages/get-record-type-id --target-dev-hub <devhub>
 sf package create --name GetPicklistValues --package-type Unlocked --no-namespace \
   --path packages/get-picklist-values --target-dev-hub <devhub>
+sf package create --name FindPossibleDuplicates --package-type Unlocked --no-namespace \
+  --path packages/find-possible-duplicates --target-dev-hub <devhub>
 ```
 
 **Publish a version:** Use `versionNumber` `1.0.0.NEXT` in `sfdx-project.json`, then:
