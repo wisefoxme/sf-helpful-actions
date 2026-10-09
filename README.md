@@ -123,7 +123,7 @@ Apex `String.split` treats the delimiter as a **regular expression**; this actio
 
 | Flow input | Required | Description |
 |------------|----------|-------------|
-| Text | Yes | String to split |
+| Text | No | String to split; null or blank returns an empty **Values** collection |
 | Delimiter | No | Separator; defaults to `;` when blank |
 
 | Flow output | Description |

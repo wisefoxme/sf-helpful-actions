@@ -3,7 +3,7 @@ public with sharing class SplitTextInvocable {
     }
 
     public class Input {
-        @InvocableVariable(label='Text' required=true)
+        @InvocableVariable(label='Text')
         public String text;
 
         @InvocableVariable(label='Delimiter')

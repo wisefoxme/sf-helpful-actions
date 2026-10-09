@@ -77,6 +77,21 @@ private class SplitTextInvocableTest {
     }
 
     @IsTest
+    static void testExecute_returnsEmptyListWhenTextNull() {
+        SplitTextInvocable.Input input = new SplitTextInvocable.Input();
+        input.text = null;
+        input.delimiter = ';';
+
+        Test.startTest();
+        List<SplitTextInvocable.Output> results = SplitTextInvocable.execute(
+            new List<SplitTextInvocable.Input>{ input }
+        );
+        Test.stopTest();
+
+        Assert.areEqual(0, results[0].values.size());
+    }
+
+    @IsTest
     static void testExecute_treatsDelimiterAsLiteralNotRegex() {
         SplitTextInvocable.Input input = new SplitTextInvocable.Input();
         input.text = '1.2.3';
