@@ -21,6 +21,13 @@
       "versionName": "1.1.0",
       "versionNumber": "1.1.0.NEXT",
       "definitionFile": "config/project-scratch-def.json"
+    },
+    {
+      "path": "packages/split-text",
+      "package": "SplitText",
+      "versionName": "1.0.0",
+      "versionNumber": "1.0.0.NEXT",
+      "definitionFile": "config/project-scratch-def.json"
     }
   ],
   "name": "sf-helpful-actions",
@@ -33,6 +40,9 @@
     "GetRecordTypeId@1.0.0-1": "04tHs000000rc52IAA",
     "GetPicklistValues@1.0.0-1": "04tHs000000rc57IAA",
     "FindPossibleDuplicates": "0HoHs000000oQfEKAU",
-    "FindPossibleDuplicates@1.1.0-1": "04tHs000000rc5HIAQ"
+    "FindPossibleDuplicates@1.1.0-1": "04tHs000000rc5HIAQ",
+    "SplitText": "0HoHs000000oQfOKAU",
+    "SplitText@0.1.0-1": "04tHs000000rc5WIAQ",
+    "SplitText@1.0.0-1": "04tHs000000rc5bIAA"
   }
 }

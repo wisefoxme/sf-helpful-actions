@@ -2,7 +2,7 @@
 
 Small, installable **Flow actions** for common automation tasks: record type and picklist lookup at runtime, and duplicate detection via your org’s duplicate rules. Each action ships as its own **Unlocked package**, so you can install one or more without pulling in unrelated code.
 
-After installation, open Flow Builder and add an **Action** element. **Get Record Type ID** and **Get Picklist Values** appear under **Utilities**; **Find Possible Duplicates** appears under **Duplicate Management**.
+After installation, open Flow Builder and add an **Action** element. **Get Record Type ID**, **Get Picklist Values**, and **Split Text** appear under **Utilities**; **Find Possible Duplicates** appears under **Duplicate Management**.
 
 ---
 
@@ -102,6 +102,42 @@ Clear failures for unknown object, unknown field, non-picklist field, unknown re
 
 ---
 
+## Split Text
+
+**Package:** `SplitText` · **Source:** `packages/split-text/`  
+**Flow action name:** Split Text
+
+### What it does
+
+Splits a **text** value into a **text collection** using a delimiter (default **`;`**). Each segment is trimmed; empty segments after trimming are omitted. Blank input text returns an empty collection without faulting the flow.
+
+Apex `String.split` treats the delimiter as a **regular expression**; this action uses `Pattern.quote` so characters such as `.` or `|` are split literally, not as regex metacharacters.
+
+### When to use it
+
+- Turn semicolon-separated or custom-delimited strings into a collection for **Loop** or **Assignment**  
+- Parse values from a long text field, screen input, or formula before iterating in Flow  
+- Complement **Get Picklist Values** when the source is stored text rather than field metadata  
+
+### Inputs and outputs
+
+| Flow input | Required | Description |
+|------------|----------|-------------|
+| Text | Yes | String to split |
+| Delimiter | No | Separator; defaults to `;` when blank |
+
+| Flow output | Description |
+|-------------|-------------|
+| Values | Text collection of split segments |
+
+Bulk invocations are supported: one output row per input row, in order.
+
+### Errors
+
+If **Delimiter** is whitespace-only (after trim), the action throws with a short message. Blank **Text** returns an empty **Values** collection.
+
+---
+
 ## Find Possible Duplicates
 
 **Package:** `FindPossibleDuplicates` · **Source:** `packages/find-possible-duplicates/`  
@@ -163,6 +199,7 @@ Bulk invocations are supported: one result row per input record, in order.
 | `packages/get-record-type-id/` | Apex invocable + tests for record type lookup |
 | `packages/get-picklist-values/` | Apex invocable + tests for picklist lookup |
 | `packages/find-possible-duplicates/` | Apex invocable + tests for duplicate detection |
+| `packages/split-text/` | Apex invocable + tests for splitting text into collections |
 | `config/project-scratch-def.json` | Scratch org definition (includes Person Accounts for tests) |
 | `scripts/package/` | Optional shell helpers for Dev Hub packaging |
 
@@ -179,6 +216,8 @@ sf project deploy start --source-dir packages/get-record-type-id --test-level Ru
 sf project deploy start --source-dir packages/get-picklist-values --test-level RunLocalTests --wait 30
 sf project deploy start --source-dir packages/find-possible-duplicates \
   --test-level RunSpecifiedTests --tests FindPossibleDuplicatesActionTest --wait 30
+sf project deploy start --source-dir packages/split-text \
+  --test-level RunSpecifiedTests --tests SplitTextInvocableTest --wait 30
 ```
 
 Scratch orgs should enable Person Accounts if you run the full test suite locally (`config/project-scratch-def.json`).
@@ -191,11 +230,12 @@ Scratch orgs should enable Person Accounts if you run the full test suite locall
 
 Packages are **Unlocked 2GP** (no namespace). Package and version aliases live in `sfdx-project.json` after you register them in a Dev Hub.
 
-**Install released versions (CLI)** — utilities at `1.0.0.1`; Find Possible Duplicates latest is **`1.1.0.1`** (`FindPossibleDuplicates@1.1.0-1`, optional matching-rule filter):
+**Install released versions (CLI)** — utilities at `1.0.0.1` (including **Split Text**); Find Possible Duplicates latest is **`1.1.0.1`** (`FindPossibleDuplicates@1.1.0-1`, optional matching-rule filter):
 
 ```bash
 sf package install --package "GetRecordTypeId@1.0.0-1" --wait 20 --target-org <target>
 sf package install --package "GetPicklistValues@1.0.0-1" --wait 20 --target-org <target>
+sf package install --package "SplitText@1.0.0-1" --wait 20 --target-org <target>
 sf package install --package "FindPossibleDuplicates@1.1.0-1" --wait 20 --target-org <target>
 ```
 
@@ -206,6 +246,7 @@ sf package install --package "FindPossibleDuplicates@1.1.0-1" --wait 20 --target
 | Get Record Type ID `1.0.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc52IAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc52IAA) |
 | Get Picklist Values `1.0.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc57IAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc57IAA) |
 | Find Possible Duplicates `1.1.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5HIAQ) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5HIAQ) |
+| Split Text `1.0.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5bIAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5bIAA) |
 
 **Create new packages in Dev Hub** (once per package):
 
@@ -217,6 +258,8 @@ sf package create --name GetPicklistValues --package-type Unlocked --no-namespac
   --path packages/get-picklist-values --target-dev-hub <devhub>
 sf package create --name FindPossibleDuplicates --package-type Unlocked --no-namespace \
   --path packages/find-possible-duplicates --target-dev-hub <devhub>
+sf package create --name SplitText --package-type Unlocked --no-namespace \
+  --path packages/split-text --target-dev-hub <devhub>
 ```
 
 **Publish a version:** Use `versionNumber` `1.0.0.NEXT` in `sfdx-project.json`, then:
