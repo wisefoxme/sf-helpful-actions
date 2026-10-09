@@ -25,8 +25,8 @@
     {
       "path": "packages/split-text",
       "package": "SplitText",
-      "versionName": "1.0.0",
-      "versionNumber": "1.0.0.NEXT",
+      "versionName": "1.0.1",
+      "versionNumber": "1.0.1.NEXT",
       "definitionFile": "config/project-scratch-def.json"
     }
   ],
@@ -43,6 +43,7 @@
     "FindPossibleDuplicates@1.1.0-1": "04tHs000000rc5HIAQ",
     "SplitText": "0HoHs000000oQfOKAU",
     "SplitText@0.1.0-1": "04tHs000000rc5WIAQ",
-    "SplitText@1.0.0-1": "04tHs000000rc5bIAA"
+    "SplitText@1.0.0-1": "04tHs000000rc5bIAA",
+    "SplitText@1.0.1-1": "04tHs000000rc5gIAA"
   }
 }

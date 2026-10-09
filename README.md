@@ -104,7 +104,7 @@ Clear failures for unknown object, unknown field, non-picklist field, unknown re
 
 ## Split Text
 
-**Package:** `SplitText` · **Source:** `packages/split-text/`  
+**Package:** `SplitText` · **Latest release:** `1.0.1.1` · **Source:** `packages/split-text/`  
 **Flow action name:** Split Text
 
 ### What it does
@@ -202,6 +202,7 @@ Bulk invocations are supported: one result row per input record, in order.
 | `packages/split-text/` | Apex invocable + tests for splitting text into collections |
 | `config/project-scratch-def.json` | Scratch org definition (includes Person Accounts for tests) |
 | `scripts/package/` | Optional shell helpers for Dev Hub packaging |
+| `docs/PACKAGING.md` | 2GP version numbering (major.minor.patch.build) and when to bump patch vs build |
 
 ---
 
@@ -230,12 +231,12 @@ Scratch orgs should enable Person Accounts if you run the full test suite locall
 
 Packages are **Unlocked 2GP** (no namespace). Package and version aliases live in `sfdx-project.json` after you register them in a Dev Hub.
 
-**Install released versions (CLI)** — utilities at `1.0.0.1` (including **Split Text**); Find Possible Duplicates latest is **`1.1.0.1`** (`FindPossibleDuplicates@1.1.0-1`, optional matching-rule filter):
+**Install released versions (CLI)** — Get Record Type ID and Get Picklist Values at `1.0.0.1`; **Split Text** latest is **`1.0.1.1`** (`SplitText@1.0.1-1`, optional null Text); Find Possible Duplicates latest is **`1.1.0.1`** (`FindPossibleDuplicates@1.1.0-1`, optional matching-rule filter):
 
 ```bash
 sf package install --package "GetRecordTypeId@1.0.0-1" --wait 20 --target-org <target>
 sf package install --package "GetPicklistValues@1.0.0-1" --wait 20 --target-org <target>
-sf package install --package "SplitText@1.0.0-1" --wait 20 --target-org <target>
+sf package install --package "SplitText@1.0.1-1" --wait 20 --target-org <target>
 sf package install --package "FindPossibleDuplicates@1.1.0-1" --wait 20 --target-org <target>
 ```
 
@@ -246,7 +247,7 @@ sf package install --package "FindPossibleDuplicates@1.1.0-1" --wait 20 --target
 | Get Record Type ID `1.0.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc52IAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc52IAA) |
 | Get Picklist Values `1.0.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc57IAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc57IAA) |
 | Find Possible Duplicates `1.1.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5HIAQ) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5HIAQ) |
-| Split Text `1.0.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5bIAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5bIAA) |
+| Split Text `1.0.1.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5gIAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5gIAA) |
 
 **Create new packages in Dev Hub** (once per package):
 
@@ -262,7 +263,7 @@ sf package create --name SplitText --package-type Unlocked --no-namespace \
   --path packages/split-text --target-dev-hub <devhub>
 ```
 
-**Publish a version:** Use `versionNumber` `1.0.0.NEXT` in `sfdx-project.json`, then:
+**Publish a version:** Set `versionName` and `versionNumber` (`major.minor.patch.NEXT`) on the package directory in `sfdx-project.json`. **Bugfixes bump patch** (e.g. `1.0.1.NEXT` → release `1.0.1.1`), not build alone on the previous patch line. See [docs/PACKAGING.md](docs/PACKAGING.md), then:
 
 ```bash
 sf package version create --package <PackageName> --installation-key-bypass \
