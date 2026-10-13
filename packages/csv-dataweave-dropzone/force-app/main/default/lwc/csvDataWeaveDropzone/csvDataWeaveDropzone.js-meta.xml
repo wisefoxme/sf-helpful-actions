@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>CSV DataWeave Dropzone</masterLabel>
+    <description>Upload CSV via drag-and-drop, convert to SObjects with a DataWeave script, and return rows to Flow without DML.</description>
+    <targets>
+        <target>lightning__FlowScreen</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+            <propertyType
+                name="T"
+                extends="SObject"
+                label="Target object type"
+                description="SObject type for converted records returned to the flow"
+            />
+            <property
+                name="scriptApiName"
+                type="String"
+                label="DataWeave Script API Name"
+                description="API name of the deployed .dwl script (no path or extension)"
+                role="inputOnly"
+            />
+            <property
+                name="targetObjectApiName"
+                type="String"
+                label="Target Object API Name"
+                description="API name of the SObject type the script produces (must match the selected target object type)"
+                role="inputOnly"
+            />
+            <property
+                name="label"
+                type="String"
+                label="Label"
+                description="Label shown above the drop zone"
+                default="Upload CSV"
+                role="inputOnly"
+            />
+            <property
+                name="helpText"
+                type="String"
+                label="Help Text"
+                description="Optional instructions for the user"
+                role="inputOnly"
+            />
+            <property
+                name="maxFileSizeBytes"
+                type="Integer"
+                label="Max File Size (bytes)"
+                description="Maximum CSV file size accepted on the client before calling Apex"
+                default="3500000"
+                role="inputOnly"
+            />
+            <property
+                name="successMessageTemplate"
+                type="String"
+                label="Success Message Template"
+                description="Message shown after a successful upload and transform. Use $0 for the record count."
+                default="$0 record(s) loaded. Data is ready for the flow (not saved to Salesforce)."
+                role="inputOnly"
+            />
+            <property
+                name="failureMessageTemplate"
+                type="String"
+                label="Failure Message Template"
+                description="Message shown when upload or transform fails. Use $0 for the error detail."
+                default="$0"
+                role="inputOnly"
+            />
+            <property
+                name="convertedRecords"
+                type="{T[]}"
+                label="Converted Records"
+                description="SObject rows produced by the DataWeave script (not persisted)"
+                role="outputOnly"
+            />
+            <property
+                name="recordCount"
+                type="Integer"
+                label="Record Count"
+                description="Number of converted records"
+                role="outputOnly"
+            />
+            <property
+                name="isComplete"
+                type="Boolean"
+                label="Conversion Complete"
+                description="True after a successful conversion"
+                role="outputOnly"
+            />
+            <property
+                name="errorMessage"
+                type="String"
+                label="Error Message"
+                description="Set when validation or conversion fails"
+                role="outputOnly"
+            />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

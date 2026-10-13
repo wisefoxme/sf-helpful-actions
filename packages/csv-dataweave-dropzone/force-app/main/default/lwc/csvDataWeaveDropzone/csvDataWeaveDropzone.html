@@ -1,0 +1,39 @@
+<template>
+    <div class="slds-form-element">
+        <label class="slds-form-element__label">{label}</label>
+        <div class="slds-form-element__control">
+            <template lwc:if={showHelpText}>
+                <p class="slds-text-body_small slds-m-bottom_x-small">{helpText}</p>
+            </template>
+
+            <div
+                class={dropzoneClass}
+                ondragover={handleDragOver}
+                ondragleave={handleDragLeave}
+                ondrop={handleDrop}
+            >
+                <input type="file" accept=".csv,text/csv" class="slds-assistive-text" onchange={handleFileInputChange} />
+                <div class="dropzone-body">
+                    <p class="slds-text-body_regular">Drag and drop a CSV file here</p>
+                    <button type="button" class="slds-button slds-button_neutral slds-m-top_small" onclick={handleBrowseClick}>
+                        Browse files
+                    </button>
+                </div>
+            </div>
+
+            <template lwc:if={isProcessing}>
+                <div class="slds-is-relative slds-m-top_small">
+                    <lightning-spinner alternative-text="Converting CSV" size="small"></lightning-spinner>
+                </div>
+            </template>
+
+            <template lwc:if={hasError}>
+                <p class="slds-text-color_error slds-m-top_small">{displayFailureMessage}</p>
+            </template>
+
+            <template lwc:if={showSuccess}>
+                <p class="slds-text-color_success slds-m-top_small">{displaySuccessMessage}</p>
+            </template>
+        </div>
+    </div>
+</template>

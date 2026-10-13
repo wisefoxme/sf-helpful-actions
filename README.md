@@ -1,8 +1,22 @@
 # sf-helpful-actions
 
-Small, installable **Flow actions** for common automation tasks: record type and picklist lookup at runtime, and duplicate detection via your org’s duplicate rules. Each action ships as its own **Unlocked package**, so you can install one or more without pulling in unrelated code.
+Small, installable **Flow utilities** for common automation tasks: invocable actions (record type and picklist lookup, text splitting, duplicate detection) and a **Flow Screen** component for CSV upload with DataWeave conversion. Each ships as its own **Unlocked package**, so you can install one or more without pulling in unrelated code.
 
-After installation, open Flow Builder and add an **Action** element. **Get Record Type ID**, **Get Picklist Values**, and **Split Text** appear under **Utilities**; **Find Possible Duplicates** appears under **Duplicate Management**.
+After installation, open Flow Builder and add an **Action** element. **Get Record Type ID**, **Get Picklist Values**, and **Split Text** appear under **Utilities**; **Find Possible Duplicates** appears under **Duplicate Management**. For CSV import on a screen flow, add the **CSV DataWeave Dropzone** component to a **Screen** element.
+
+<details>
+<summary>Table of contents</summary>
+
+- [Get Record Type ID](#get-record-type-id)
+- [Get Picklist Values](#get-picklist-values)
+- [Split Text](#split-text)
+- [Find Possible Duplicates](#find-possible-duplicates)
+- [CSV DataWeave Dropzone](#csv-dataweave-dropzone)
+- [Repository layout](#repository-layout)
+- [Development](#development)
+- [Packaging and installation](#packaging-and-installation)
+
+</details>
 
 ---
 
@@ -192,6 +206,65 @@ Bulk invocations are supported: one result row per input record, in order.
 
 ---
 
+## CSV DataWeave Dropzone
+
+**Package:** `CsvDataWeaveDropzone` · **Latest release:** `0.1.0.1` · **Source:** `packages/csv-dataweave-dropzone/`  
+**Flow component:** CSV DataWeave Dropzone (Screen flows only)
+
+### What it does
+
+Provides a drag-and-drop CSV upload on a **Flow Screen**. The flow author configures a deployed **DataWeave script API name** and **target object API name**. When the user uploads a file, Apex runs the script and returns in-memory **SObject** rows to the flow. **No DML** is performed; use **Create Records** (or similar) later in the flow if you need to persist data.
+
+The target org must support **DataWeave for Apex** (`DataWeave.Script`). Subscribers deploy their own `.dwl` scripts; the package includes `CsvDataWeaveDropzoneTest` only for Apex test coverage.
+
+### DataWeave script contract
+
+Scripts must be deployed as DataWeave resources in the org. Typical shape:
+
+```dataweave
+%dw 2.0
+input records application/csv
+output application/apex
+---
+records map(record) -> {
+  FirstName: record.first_name,
+  LastName: record.last_name,
+  Email: record.email
+} as Object {class: "Contact"}
+```
+
+- **Input:** CSV body is passed as `records` in the Apex payload (along with `targetObjectApiName`).
+- **Output:** Must be `application/apex` — a list of SObjects matching the configured target object type.
+
+### Flow configuration
+
+On the screen component, set:
+
+| Property | Description |
+|----------|-------------|
+| Target object type (`T`) | Generic SObject type for the **Converted Records** output collection |
+| DataWeave Script API Name | API name of the `.dwl` resource (no path or extension) |
+| Target Object API Name | API name of the SObject type the script produces (must match `T`) |
+| Label / Help Text | Optional UI copy |
+| Max File Size (bytes) | Client-side limit before calling Apex (default 3,500,000) |
+
+| Output | Description |
+|--------|-------------|
+| Converted Records | `{T[]}` — rows from DataWeave (not saved) |
+| Record Count | Number of rows |
+| Conversion Complete | True after a successful run |
+| Error Message | Set when validation or conversion fails |
+
+The component implements screen **validation**: users cannot proceed until a CSV is uploaded and converted successfully (or fix errors). Maximum CSV size on the server matches the client default (~3.5M characters).
+
+### When to use it
+
+- Screen flows where admins or users upload CSV files and the flow creates or updates records in bulk  
+- Column mapping or cleansing logic maintained in **DataWeave** instead of Apex  
+- Prototypes and imports where you want transformation separate from DML  
+
+---
+
 ## Repository layout
 
 | Path | Contents |
@@ -200,6 +273,7 @@ Bulk invocations are supported: one result row per input record, in order.
 | `packages/get-picklist-values/` | Apex invocable + tests for picklist lookup |
 | `packages/find-possible-duplicates/` | Apex invocable + tests for duplicate detection |
 | `packages/split-text/` | Apex invocable + tests for splitting text into collections |
+| `packages/csv-dataweave-dropzone/` | Flow screen LWC, Apex, sample DataWeave script + tests for CSV conversion |
 | `config/project-scratch-def.json` | Scratch org definition (includes Person Accounts for tests) |
 | `scripts/package/` | Optional shell helpers for Dev Hub packaging |
 | `docs/PACKAGING.md` | 2GP version numbering (major.minor.patch.build) and when to bump patch vs build |
@@ -219,6 +293,10 @@ sf project deploy start --source-dir packages/find-possible-duplicates \
   --test-level RunSpecifiedTests --tests FindPossibleDuplicatesActionTest --wait 30
 sf project deploy start --source-dir packages/split-text \
   --test-level RunSpecifiedTests --tests SplitTextInvocableTest --wait 30
+sf project deploy start --source-dir packages/csv-dataweave-dropzone \
+  --test-level RunSpecifiedTests \
+  --tests DataWeaveCsvConversionServiceTest --tests DataWeaveCsvConversionControllerTest \
+  --wait 30
 ```
 
 Scratch orgs should enable Person Accounts if you run the full test suite locally (`config/project-scratch-def.json`).
@@ -231,13 +309,14 @@ Scratch orgs should enable Person Accounts if you run the full test suite locall
 
 Packages are **Unlocked 2GP** (no namespace). Package and version aliases live in `sfdx-project.json` after you register them in a Dev Hub.
 
-**Install released versions (CLI)** — Get Record Type ID and Get Picklist Values at `1.0.0.1`; **Split Text** latest is **`1.0.1.1`** (`SplitText@1.0.1-1`, optional null Text); Find Possible Duplicates latest is **`1.1.0.1`** (`FindPossibleDuplicates@1.1.0-1`, optional matching-rule filter):
+**Install released versions (CLI)** — Get Record Type ID and Get Picklist Values at `1.0.0.1`; **Split Text** latest is **`1.0.1.1`** (`SplitText@1.0.1-1`); Find Possible Duplicates latest is **`1.1.0.1`** (`FindPossibleDuplicates@1.1.0-1`); **CSV DataWeave Dropzone** latest is **`0.1.0.1`** (`CsvDataWeaveDropzone@0.1.0-1`):
 
 ```bash
 sf package install --package "GetRecordTypeId@1.0.0-1" --wait 20 --target-org <target>
 sf package install --package "GetPicklistValues@1.0.0-1" --wait 20 --target-org <target>
 sf package install --package "SplitText@1.0.1-1" --wait 20 --target-org <target>
 sf package install --package "FindPossibleDuplicates@1.1.0-1" --wait 20 --target-org <target>
+sf package install --package "CsvDataWeaveDropzone@0.1.0-1" --wait 20 --target-org <target>
 ```
 
 **Install in the browser** — open the link while logged into the org where you want the package (or sign in when prompted). Replace `p0` with the subscriber package version Id (`04t…`) from `packageAliases` in `sfdx-project.json` when you publish a new version.
@@ -248,6 +327,7 @@ sf package install --package "FindPossibleDuplicates@1.1.0-1" --wait 20 --target
 | Get Picklist Values `1.0.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc57IAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc57IAA) |
 | Find Possible Duplicates `1.1.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5HIAQ) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5HIAQ) |
 | Split Text `1.0.1.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5gIAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5gIAA) |
+| CSV DataWeave Dropzone `0.1.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5lIAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5lIAA) |
 
 **Create new packages in Dev Hub** (once per package):
 
@@ -261,6 +341,8 @@ sf package create --name FindPossibleDuplicates --package-type Unlocked --no-nam
   --path packages/find-possible-duplicates --target-dev-hub <devhub>
 sf package create --name SplitText --package-type Unlocked --no-namespace \
   --path packages/split-text --target-dev-hub <devhub>
+sf package create --name CsvDataWeaveDropzone --package-type Unlocked --no-namespace \
+  --path packages/csv-dataweave-dropzone --target-dev-hub <devhub>
 ```
 
 **Publish a version:** Set `versionName` and `versionNumber` (`major.minor.patch.NEXT`) on the package directory in `sfdx-project.json`. **Bugfixes bump patch** (e.g. `1.0.1.NEXT` → release `1.0.1.1`), not build alone on the previous patch line. See [docs/PACKAGING.md](docs/PACKAGING.md), then:

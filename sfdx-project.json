@@ -28,6 +28,13 @@
       "versionName": "1.0.1",
       "versionNumber": "1.0.1.NEXT",
       "definitionFile": "config/project-scratch-def.json"
+    },
+    {
+      "path": "packages/csv-dataweave-dropzone",
+      "package": "CsvDataWeaveDropzone",
+      "versionName": "0.1.0",
+      "versionNumber": "0.1.0.NEXT",
+      "definitionFile": "config/project-scratch-def.json"
     }
   ],
   "name": "sf-helpful-actions",
@@ -44,6 +51,8 @@
     "SplitText": "0HoHs000000oQfOKAU",
     "SplitText@0.1.0-1": "04tHs000000rc5WIAQ",
     "SplitText@1.0.0-1": "04tHs000000rc5bIAA",
-    "SplitText@1.0.1-1": "04tHs000000rc5gIAA"
+    "SplitText@1.0.1-1": "04tHs000000rc5gIAA",
+    "CsvDataWeaveDropzone": "0HoHs000000oQfTKAU",
+    "CsvDataWeaveDropzone@0.1.0-1": "04tHs000000rc5lIAA"
   }
 }
