@@ -18,4 +18,7 @@ sf package create --name FindPossibleDuplicates --package-type Unlocked --no-nam
 sf package create --name CsvDataWeaveDropzone --package-type Unlocked --no-namespace \
   --path packages/csv-dataweave-dropzone --target-dev-hub "$DEVHUB"
 
+sf package create --name InfiniteRelatedList --package-type Unlocked --no-namespace \
+  --path packages/infinite-related-list --target-dev-hub "$DEVHUB"
+
 echo "Commit sfdx-project.json packageAliases if the CLI updated them."

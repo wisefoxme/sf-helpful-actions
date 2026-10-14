@@ -1,8 +1,8 @@
 # sf-helpful-actions
 
-Small, installable **Flow utilities** for common automation tasks: invocable actions (record type and picklist lookup, text splitting, duplicate detection) and a **Flow Screen** component for CSV upload with DataWeave conversion. Each ships as its own **Unlocked package**, so you can install one or more without pulling in unrelated code.
+Small, installable **Salesforce utilities**: Flow invocable actions (record type and picklist lookup, text splitting, duplicate detection), a **Flow Screen** component for CSV upload with DataWeave conversion, and a **Lightning record page** component for related lists with infinite scroll. Each ships as its own **Unlocked package**, so you can install one or more without pulling in unrelated code.
 
-After installation, open Flow Builder and add an **Action** element. **Get Record Type ID**, **Get Picklist Values**, and **Split Text** appear under **Utilities**; **Find Possible Duplicates** appears under **Duplicate Management**. For CSV import on a screen flow, add the **CSV DataWeave Dropzone** component to a **Screen** element.
+After installation, open Flow Builder and add an **Action** element. **Get Record Type ID**, **Get Picklist Values**, and **Split Text** appear under **Utilities**; **Find Possible Duplicates** appears under **Duplicate Management**. For CSV import on a screen flow, add the **CSV DataWeave Dropzone** component to a **Screen** element. On record pages, add **Infinite Related List** from the Lightning App Builder component palette.
 
 <details>
 <summary>Table of contents</summary>
@@ -12,6 +12,7 @@ After installation, open Flow Builder and add an **Action** element. **Get Recor
 - [Split Text](#split-text)
 - [Find Possible Duplicates](#find-possible-duplicates)
 - [CSV DataWeave Dropzone](#csv-dataweave-dropzone)
+- [Infinite Related List](#infinite-related-list)
 - [Repository layout](#repository-layout)
 - [Development](#development)
 - [Packaging and installation](#packaging-and-installation)
@@ -265,6 +266,47 @@ The component implements screen **validation**: users cannot proceed until a CSV
 
 ---
 
+## Infinite Related List
+
+**Package:** `InfiniteRelatedList` · **Latest release:** `0.1.0.1` · **Source:** `packages/infinite-related-list/`  
+**Lightning component:** Infinite Related List (record pages only)
+
+### What it does
+
+Shows a child **related list** on a **record page** in a scrollable datatable. The first page loads when the page opens; additional rows load automatically as the user scrolls (**infinite loading**). Column layout and labels come from the org’s related list metadata (UI API), so the list matches what users expect from standard related lists.
+
+The header shows the related list title (or an override), object icon, and record count (with `+` when the count is capped). Row actions include **View**, and **Edit** / **Delete** when the running user has update or delete on the child object.
+
+Design-time configuration uses **`RelatedListPicklist`**, an Apex dynamic picklist that lists child relationships for the page’s object (relationship API names such as `Contacts` or `Cases__r`).
+
+### When to use it
+
+- Parent records with **many related rows** where the standard related list is slow or awkward to paginate through  
+- Record pages where you want a **fixed-height**, scrollable related list instead of expanding the page  
+- Any object with standard or custom child relationships exposed on the page layout  
+
+The component uses **Lightning UI API** (`lightning/uiRelatedListApi`); users need read access to the parent record and the related records. Fields the user cannot see are requested as optional fields so the wire does not fail.
+
+### App Builder properties
+
+| Property | Required | Description |
+|----------|----------|-------------|
+| Related List | Yes | Child relationship (from dynamic picklist) |
+| Title | No | Overrides the related list label |
+| Icon | No | SLDS icon name (e.g. `standard:account`); blank uses object theme |
+| Records per Load | No | Page size for each fetch (default 50, max 1999) |
+| Height (px) | No | Height of the scrollable datatable area (default 400) |
+
+`recordId` and `objectApiName` are supplied automatically on record pages.
+
+### Behavior notes
+
+- Registers with **Lightning Refresh** so list data can reload when the page refresh event fires  
+- **Delete** uses `lightning/uiRecordApi` with a confirmation dialog; count refreshes after delete  
+- Count display uses `getRelatedListCount` with a max of 2000; counts above that show as `2000+`  
+
+---
+
 ## Repository layout
 
 | Path | Contents |
@@ -274,6 +316,7 @@ The component implements screen **validation**: users cannot proceed until a CSV
 | `packages/find-possible-duplicates/` | Apex invocable + tests for duplicate detection |
 | `packages/split-text/` | Apex invocable + tests for splitting text into collections |
 | `packages/csv-dataweave-dropzone/` | Flow screen LWC, Apex, sample DataWeave script + tests for CSV conversion |
+| `packages/infinite-related-list/` | Record page LWC + Apex dynamic picklist + tests for infinite related list |
 | `config/project-scratch-def.json` | Scratch org definition (includes Person Accounts for tests) |
 | `scripts/package/` | Optional shell helpers for Dev Hub packaging |
 | `docs/PACKAGING.md` | 2GP version numbering (major.minor.patch.build) and when to bump patch vs build |
@@ -297,6 +340,8 @@ sf project deploy start --source-dir packages/csv-dataweave-dropzone \
   --test-level RunSpecifiedTests \
   --tests DataWeaveCsvConversionServiceTest --tests DataWeaveCsvConversionControllerTest \
   --wait 30
+sf project deploy start --source-dir packages/infinite-related-list \
+  --test-level RunSpecifiedTests --tests RelatedListPicklistTest --wait 30
 ```
 
 Scratch orgs should enable Person Accounts if you run the full test suite locally (`config/project-scratch-def.json`).
@@ -309,7 +354,7 @@ Scratch orgs should enable Person Accounts if you run the full test suite locall
 
 Packages are **Unlocked 2GP** (no namespace). Package and version aliases live in `sfdx-project.json` after you register them in a Dev Hub.
 
-**Install released versions (CLI)** — Get Record Type ID and Get Picklist Values at `1.0.0.1`; **Split Text** latest is **`1.0.1.1`** (`SplitText@1.0.1-1`); Find Possible Duplicates latest is **`1.1.0.1`** (`FindPossibleDuplicates@1.1.0-1`); **CSV DataWeave Dropzone** latest is **`0.1.0.1`** (`CsvDataWeaveDropzone@0.1.0-1`):
+**Install released versions (CLI)** — Get Record Type ID and Get Picklist Values at `1.0.0.1`; **Split Text** latest is **`1.0.1.1`** (`SplitText@1.0.1-1`); Find Possible Duplicates latest is **`1.1.0.1`** (`FindPossibleDuplicates@1.1.0-1`); **CSV DataWeave Dropzone** latest is **`0.1.0.1`** (`CsvDataWeaveDropzone@0.1.0-1`); **Infinite Related List** latest is **`0.1.0.1`** (`InfiniteRelatedList@0.1.0-1`):
 
 ```bash
 sf package install --package "GetRecordTypeId@1.0.0-1" --wait 20 --target-org <target>
@@ -317,6 +362,7 @@ sf package install --package "GetPicklistValues@1.0.0-1" --wait 20 --target-org 
 sf package install --package "SplitText@1.0.1-1" --wait 20 --target-org <target>
 sf package install --package "FindPossibleDuplicates@1.1.0-1" --wait 20 --target-org <target>
 sf package install --package "CsvDataWeaveDropzone@0.1.0-1" --wait 20 --target-org <target>
+sf package install --package "InfiniteRelatedList@0.1.0-1" --wait 20 --target-org <target>
 ```
 
 **Install in the browser** — open the link while logged into the org where you want the package (or sign in when prompted). Replace `p0` with the subscriber package version Id (`04t…`) from `packageAliases` in `sfdx-project.json` when you publish a new version.
@@ -328,6 +374,7 @@ sf package install --package "CsvDataWeaveDropzone@0.1.0-1" --wait 20 --target-o
 | Find Possible Duplicates `1.1.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5HIAQ) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5HIAQ) |
 | Split Text `1.0.1.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5gIAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5gIAA) |
 | CSV DataWeave Dropzone `0.1.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5lIAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5lIAA) |
+| Infinite Related List `0.1.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5qIAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5qIAA) |
 
 **Create new packages in Dev Hub** (once per package):
 
@@ -343,6 +390,8 @@ sf package create --name SplitText --package-type Unlocked --no-namespace \
   --path packages/split-text --target-dev-hub <devhub>
 sf package create --name CsvDataWeaveDropzone --package-type Unlocked --no-namespace \
   --path packages/csv-dataweave-dropzone --target-dev-hub <devhub>
+sf package create --name InfiniteRelatedList --package-type Unlocked --no-namespace \
+  --path packages/infinite-related-list --target-dev-hub <devhub>
 ```
 
 **Publish a version:** Set `versionName` and `versionNumber` (`major.minor.patch.NEXT`) on the package directory in `sfdx-project.json`. **Bugfixes bump patch** (e.g. `1.0.1.NEXT` → release `1.0.1.1`), not build alone on the previous patch line. See [docs/PACKAGING.md](docs/PACKAGING.md), then:

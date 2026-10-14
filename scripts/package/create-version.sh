@@ -8,7 +8,7 @@ fi
 
 PACKAGE_NAME="${1:-}"
 if [[ -z "$PACKAGE_NAME" ]]; then
-  echo "Usage: DEVHUB=<alias> $0 <GetRecordTypeId|GetPicklistValues|FindPossibleDuplicates|SplitText|CsvDataWeaveDropzone>" >&2
+  echo "Usage: DEVHUB=<alias> $0 <GetRecordTypeId|GetPicklistValues|FindPossibleDuplicates|SplitText|CsvDataWeaveDropzone|InfiniteRelatedList>" >&2
   exit 1
 fi
 

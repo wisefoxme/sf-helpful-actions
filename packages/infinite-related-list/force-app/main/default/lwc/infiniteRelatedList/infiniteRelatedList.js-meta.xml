@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Infinite Related List</masterLabel>
+    <description
+  >A related list that loads more records as you scroll.</description>
+    <targets>
+        <target>lightning__RecordPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage">
+            <property
+        name="relatedListId"
+        type="String"
+        label="Related List"
+        description="The child relationship whose records are shown."
+        datasource="apex://RelatedListPicklist"
+        required="true"
+      />
+            <property
+        name="titleOverride"
+        type="String"
+        label="Title"
+        description="Leave blank to use the related list label."
+      />
+            <property
+        name="iconOverride"
+        type="String"
+        label="Icon"
+        description="An SLDS icon name, for example standard:account. Leave blank to use the object's icon."
+      />
+            <property
+        name="pageSize"
+        type="Integer"
+        label="Records per Load"
+        default="50"
+        min="1"
+        max="1999"
+      />
+            <property
+        name="height"
+        type="Integer"
+        label="Height (px)"
+        description="Height of the scrollable area."
+        default="400"
+        min="100"
+      />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

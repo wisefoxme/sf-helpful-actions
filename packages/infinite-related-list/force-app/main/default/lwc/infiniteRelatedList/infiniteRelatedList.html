@@ -1,0 +1,41 @@
+<template>
+  <lightning-card icon-name={iconName}>
+    <h2 slot="title" class="slds-card__header-title">
+      <span class="slds-truncate" title={title}>{title}</span>
+      <span class="slds-m-left_xx-small">{countLabel}</span>
+    </h2>
+
+    <template lwc:if={errorMessage}>
+      <div class="slds-p-horizontal_medium slds-text-color_error">
+        {errorMessage}
+      </div>
+    </template>
+    <template lwc:elseif={isFirstLoad}>
+      <div class="slds-is-relative slds-p-around_large">
+        <lightning-spinner
+          alternative-text="Loading"
+          size="small"
+        ></lightning-spinner>
+      </div>
+    </template>
+    <template lwc:elseif={isEmpty}>
+      <p class="slds-p-horizontal_medium slds-text-color_weak">
+        No records to display.
+      </p>
+    </template>
+    <template lwc:else>
+      <div style={containerStyle}>
+        <lightning-datatable
+          key-field="Id"
+          data={rows}
+          columns={columns}
+          hide-checkbox-column
+          enable-infinite-loading={hasMore}
+          is-loading={isLoadingMore}
+          onloadmore={handleLoadMore}
+          onrowaction={handleRowAction}
+        ></lightning-datatable>
+      </div>
+    </template>
+  </lightning-card>
+</template>

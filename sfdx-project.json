@@ -35,6 +35,13 @@
       "versionName": "0.1.0",
       "versionNumber": "0.1.0.NEXT",
       "definitionFile": "config/project-scratch-def.json"
+    },
+    {
+      "path": "packages/infinite-related-list",
+      "package": "InfiniteRelatedList",
+      "versionName": "0.1.0",
+      "versionNumber": "0.1.0.NEXT",
+      "definitionFile": "config/project-scratch-def.json"
     }
   ],
   "name": "sf-helpful-actions",
@@ -53,6 +60,8 @@
     "SplitText@1.0.0-1": "04tHs000000rc5bIAA",
     "SplitText@1.0.1-1": "04tHs000000rc5gIAA",
     "CsvDataWeaveDropzone": "0HoHs000000oQfTKAU",
-    "CsvDataWeaveDropzone@0.1.0-1": "04tHs000000rc5lIAA"
+    "CsvDataWeaveDropzone@0.1.0-1": "04tHs000000rc5lIAA",
+    "InfiniteRelatedList": "0HoHs000000oQfYKAU",
+    "InfiniteRelatedList@0.1.0-1": "04tHs000000rc5qIAA"
   }
 }
