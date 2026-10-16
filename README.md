@@ -209,7 +209,7 @@ Bulk invocations are supported: one result row per input record, in order.
 
 ## CSV DataWeave Dropzone
 
-**Package:** `CsvDataWeaveDropzone` · **Latest release:** `0.1.0.1` · **Source:** `packages/csv-dataweave-dropzone/`  
+**Package:** `CsvDataWeaveDropzone` · **Latest release:** `0.1.1.1` · **Source:** `packages/csv-dataweave-dropzone/`  
 **Flow component:** CSV DataWeave Dropzone (Screen flows only)
 
 ### What it does
@@ -357,14 +357,14 @@ Scratch orgs should enable Person Accounts if you run the full test suite locall
 
 Packages are **Unlocked 2GP** (no namespace). Package and version aliases live in `sfdx-project.json` after you register them in a Dev Hub.
 
-**Install released versions (CLI)** — Get Record Type ID and Get Picklist Values at `1.0.0.1`; **Split Text** latest is **`1.0.1.1`** (`SplitText@1.0.1-1`); Find Possible Duplicates latest is **`1.1.0.1`** (`FindPossibleDuplicates@1.1.0-1`); **CSV DataWeave Dropzone** latest is **`0.1.0.1`** (`CsvDataWeaveDropzone@0.1.0-1`); **Infinite Related List** latest is **`0.1.0.1`** (`InfiniteRelatedList@0.1.0-1`):
+**Install released versions (CLI)** — Get Record Type ID and Get Picklist Values at `1.0.0.1`; **Split Text** latest is **`1.0.1.1`** (`SplitText@1.0.1-1`); Find Possible Duplicates latest is **`1.1.0.1`** (`FindPossibleDuplicates@1.1.0-1`); **CSV DataWeave Dropzone** latest is **`0.1.1.1`** (`CsvDataWeaveDropzone@0.1.1-1`); **Infinite Related List** latest is **`0.1.0.1`** (`InfiniteRelatedList@0.1.0-1`):
 
 ```bash
 sf package install --package "GetRecordTypeId@1.0.0-1" --wait 20 --target-org <target>
 sf package install --package "GetPicklistValues@1.0.0-1" --wait 20 --target-org <target>
 sf package install --package "SplitText@1.0.1-1" --wait 20 --target-org <target>
 sf package install --package "FindPossibleDuplicates@1.1.0-1" --wait 20 --target-org <target>
-sf package install --package "CsvDataWeaveDropzone@0.1.0-1" --wait 20 --target-org <target>
+sf package install --package "CsvDataWeaveDropzone@0.1.1-1" --wait 20 --target-org <target>
 sf package install --package "InfiniteRelatedList@0.1.0-1" --wait 20 --target-org <target>
 ```
 
@@ -376,7 +376,7 @@ sf package install --package "InfiniteRelatedList@0.1.0-1" --wait 20 --target-or
 | Get Picklist Values `1.0.0.1`      | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc57IAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc57IAA) |
 | Find Possible Duplicates `1.1.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5HIAQ) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5HIAQ) |
 | Split Text `1.0.1.1`               | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5gIAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5gIAA) |
-| CSV DataWeave Dropzone `0.1.0.1`   | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5lIAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5lIAA) |
+| CSV DataWeave Dropzone `0.1.1.1`   | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5vIAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5vIAA) |
 | Infinite Related List `0.1.0.1`    | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5qIAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5qIAA) |
 
 **Create new packages in Dev Hub** (once per package):

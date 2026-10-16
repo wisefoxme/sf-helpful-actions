@@ -32,8 +32,8 @@
     {
       "path": "packages/csv-dataweave-dropzone",
       "package": "CsvDataWeaveDropzone",
-      "versionName": "0.1.0",
-      "versionNumber": "0.1.0.NEXT",
+      "versionName": "0.1.1",
+      "versionNumber": "0.1.1.NEXT",
       "definitionFile": "config/project-scratch-def.json"
     },
     {
@@ -61,7 +61,9 @@
     "SplitText@1.0.1-1": "04tHs000000rc5gIAA",
     "CsvDataWeaveDropzone": "0HoHs000000oQfTKAU",
     "CsvDataWeaveDropzone@0.1.0-1": "04tHs000000rc5lIAA",
+    "CsvDataWeaveDropzone@0.1.1-1": "04tHs000000rc5vIAA",
     "InfiniteRelatedList": "0HoHs000000oQfYKAU",
-    "InfiniteRelatedList@0.1.0-1": "04tHs000000rc5qIAA"
+    "InfiniteRelatedList@0.1.0-1": "04tHs000000rc5qIAA",
+    "CsvDataWeaveDropzone@0.1.1-1": "04tHs000000rc5vIAA"
   }
 }
