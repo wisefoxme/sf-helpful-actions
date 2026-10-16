@@ -32,26 +32,26 @@ Flows often need a record type Id when creating records dynamically—for exampl
 
 This action looks up the **18-character record type Id** from:
 
-- the object’s API name (e.g. `Account`, `Case`, `MyObject__c`), and  
+- the object’s API name (e.g. `Account`, `Case`, `MyObject__c`), and
 - the record type’s **developer name** (e.g. `PersonAccount`, `Support_Case`).
 
 Lookup uses the Schema API (`getRecordTypeInfosByDeveloperName()`). It does not query the database and works for any object and record type that exist in the org.
 
 ### When to use it
 
-- Create Records with `RecordTypeId` set from a developer name stored in a variable  
-- Branch or assign variables when you know the record type by name, not Id  
-- Avoid hard-coding Ids that differ between sandboxes and production  
+- Create Records with `RecordTypeId` set from a developer name stored in a variable
+- Branch or assign variables when you know the record type by name, not Id
+- Avoid hard-coding Ids that differ between sandboxes and production
 
 ### Inputs and outputs
 
-| Flow input | Required | Description |
-|------------|----------|-------------|
-| SObject API Name | Yes | API name of the object |
-| Record Type Developer Name | Yes | Developer name of the record type (not the label) |
+| Flow input                 | Required | Description                                       |
+| -------------------------- | -------- | ------------------------------------------------- |
+| SObject API Name           | Yes      | API name of the object                            |
+| Record Type Developer Name | Yes      | Developer name of the record type (not the label) |
 
-| Flow output | Description |
-|-------------|-------------|
+| Flow output    | Description                    |
+| -------------- | ------------------------------ |
 | Record Type ID | Id of the matching record type |
 
 The action supports **bulk invocations** (multiple input rows in one call), which matches Flow’s behavior when the action runs inside a loop or on a collection.
@@ -73,40 +73,40 @@ Returns the **allowed values** for a picklist or multi-select picklist field as 
 
 Each entry includes:
 
-| Field on each option | Meaning |
-|----------------------|---------|
-| Label | User-facing label |
-| Value | API value stored on the record |
-| Is Active | Whether the value is active (master describe path) |
-| Is Default | Whether the value is the field default for that context |
+| Field on each option | Meaning                                                 |
+| -------------------- | ------------------------------------------------------- |
+| Label                | User-facing label                                       |
+| Value                | API value stored on the record                          |
+| Is Active            | Whether the value is active (master describe path)      |
+| Is Default           | Whether the value is the field default for that context |
 
 ### Two modes: master vs record type
 
-| Record Type Developer Name | Behavior |
-|----------------------------|----------|
-| **Left blank** | Uses Schema describe on the field. Returns the **master** picklist value set (all active entries from `DescribeFieldResult.getPicklistValues()`). |
-| **Provided** | Uses **Connect API** (`RecordUi.getPicklistValuesByRecordType`) so values match what the UI shows for that **record type**—including record-type-specific subsets. Standard describe alone cannot return those restricted values. |
+| Record Type Developer Name | Behavior                                                                                                                                                                                                                          |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Left blank**             | Uses Schema describe on the field. Returns the **master** picklist value set (all active entries from `DescribeFieldResult.getPicklistValues()`).                                                                                 |
+| **Provided**               | Uses **Connect API** (`RecordUi.getPicklistValuesByRecordType`) so values match what the UI shows for that **record type**—including record-type-specific subsets. Standard describe alone cannot return those restricted values. |
 
 Object and field API names are matched case-insensitively. Only picklist and multi-select picklist fields are supported; other field types produce a clear error.
 
 ### When to use it
 
-- Populate a **collection variable** or **dynamic choices** from a field’s values without maintaining duplicate picklists in the flow  
-- Build screens or decisions that depend on the same values as a picklist on Account, Case, or custom objects  
-- When record types restrict picklists, pass **Record Type Developer Name** so the list matches create/edit for that record type  
+- Populate a **collection variable** or **dynamic choices** from a field’s values without maintaining duplicate picklists in the flow
+- Build screens or decisions that depend on the same values as a picklist on Account, Case, or custom objects
+- When record types restrict picklists, pass **Record Type Developer Name** so the list matches create/edit for that record type
 
 Pair with **Get Record Type ID** when the flow knows the record type by developer name but needs picklist values for that type.
 
 ### Inputs and outputs
 
-| Flow input | Required | Description |
-|------------|----------|-------------|
-| SObject API Name | Yes | API name of the object |
-| Field API Name | Yes | API name of the picklist or multi-select picklist field |
-| Record Type Developer Name | No | If set, values are scoped to this record type |
+| Flow input                 | Required | Description                                             |
+| -------------------------- | -------- | ------------------------------------------------------- |
+| SObject API Name           | Yes      | API name of the object                                  |
+| Field API Name             | Yes      | API name of the picklist or multi-select picklist field |
+| Record Type Developer Name | No       | If set, values are scoped to this record type           |
 
-| Flow output | Description |
-|-------------|-------------|
+| Flow output     | Description                                                 |
+| --------------- | ----------------------------------------------------------- |
 | Picklist Values | Collection of options (label, value, is active, is default) |
 
 Bulk invocations are supported the same way as the record type action.
@@ -130,20 +130,20 @@ Apex `String.split` treats the delimiter as a **regular expression**; this actio
 
 ### When to use it
 
-- Turn semicolon-separated or custom-delimited strings into a collection for **Loop** or **Assignment**  
-- Parse values from a long text field, screen input, or formula before iterating in Flow  
-- Complement **Get Picklist Values** when the source is stored text rather than field metadata  
+- Turn semicolon-separated or custom-delimited strings into a collection for **Loop** or **Assignment**
+- Parse values from a long text field, screen input, or formula before iterating in Flow
+- Complement **Get Picklist Values** when the source is stored text rather than field metadata
 
 ### Inputs and outputs
 
-| Flow input | Required | Description |
-|------------|----------|-------------|
-| Text | No | String to split; null or blank returns an empty **Values** collection |
-| Delimiter | No | Separator; defaults to `;` when blank |
+| Flow input | Required | Description                                                           |
+| ---------- | -------- | --------------------------------------------------------------------- |
+| Text       | No       | String to split; null or blank returns an empty **Values** collection |
+| Delimiter  | No       | Separator; defaults to `;` when blank                                 |
 
-| Flow output | Description |
-|-------------|-------------|
-| Values | Text collection of split segments |
+| Flow output | Description                       |
+| ----------- | --------------------------------- |
+| Values      | Text collection of split segments |
 
 Bulk invocations are supported: one output row per input row, in order.
 
@@ -170,38 +170,38 @@ Optionally pass **Matching Rule API Names** to return only hits from those match
 
 ### When to use it
 
-- Check for duplicates **before** creating or updating a record in Flow  
-- Screen **unsaved** records built on a screen or from variables  
-- Run duplicate checks in a **loop** or on a collection (bulk-safe chunking)  
+- Check for duplicates **before** creating or updating a record in Flow
+- Screen **unsaved** records built on a screen or from variables
+- Run duplicate checks in a **loop** or on a collection (bulk-safe chunking)
 
 Your org must have **active duplicate rules** on the objects you pass in; otherwise the action returns an error message per row.
 
 ### Inputs and outputs
 
-| Flow input | Required | Description |
-|------------|----------|-------------|
-| Record | Yes | The record to check (any object with duplicate rules) |
-| Matching Rule API Names | No | Collection of matching rule **developer names**; only those rules’ hits are returned |
+| Flow input              | Required | Description                                                                          |
+| ----------------------- | -------- | ------------------------------------------------------------------------------------ |
+| Record                  | Yes      | The record to check (any object with duplicate rules)                                |
+| Matching Rule API Names | No       | Collection of matching rule **developer names**; only those rules’ hits are returned |
 
-| Flow output | Description |
-|-------------|-------------|
-| Has Duplicates | True when at least one possible duplicate was found |
-| Duplicate Record | Best match (highest confidence); standard fields only |
-| Duplicate Record ID | Id of the best match |
-| Duplicate Records | All possible duplicates |
-| Duplicate Record IDs | Ids of all possible duplicates |
-| Match Confidence | Confidence of the best match, when the rule provides one |
-| Duplicate Rule Name | API name of the duplicate rule for the best match |
-| Matching Rule Name | API name of the matching rule for the best match |
-| Error Message | Why the search could not run (e.g. no active duplicate rule, missing record) |
+| Flow output          | Description                                                                  |
+| -------------------- | ---------------------------------------------------------------------------- |
+| Has Duplicates       | True when at least one possible duplicate was found                          |
+| Duplicate Record     | Best match (highest confidence); standard fields only                        |
+| Duplicate Record ID  | Id of the best match                                                         |
+| Duplicate Records    | All possible duplicates                                                      |
+| Duplicate Record IDs | Ids of all possible duplicates                                               |
+| Match Confidence     | Confidence of the best match, when the rule provides one                     |
+| Duplicate Rule Name  | API name of the duplicate rule for the best match                            |
+| Matching Rule Name   | API name of the matching rule for the best match                             |
+| Error Message        | Why the search could not run (e.g. no active duplicate rule, missing record) |
 
 Bulk invocations are supported: one result row per input record, in order.
 
 ### Errors
 
-- **No record was given.** — input record is null  
-- **No active duplicate rule** — surfaced in **Error Message** (Flow does not fault)  
-- Datacloud search failures — message in **Error Message** for that row  
+- **No record was given.** — input record is null
+- **No active duplicate rule** — surfaced in **Error Message** (Flow does not fault)
+- Datacloud search failures — message in **Error Message** for that row
 
 **Tests:** Integration tests that call real `Datacloud.FindDuplicates` expect the **Standard Contact Duplicate Rule** to be active (typical in Developer Edition and many sandboxes). Stub-based tests cover error handling, best-match selection, chunking, and ordering without Datacloud.
 
@@ -241,28 +241,31 @@ records map(record) -> {
 
 On the screen component, set:
 
-| Property | Description |
-|----------|-------------|
-| Target object type (`T`) | Generic SObject type for the **Converted Records** output collection |
-| DataWeave Script API Name | API name of the `.dwl` resource (no path or extension) |
-| Target Object API Name | API name of the SObject type the script produces (must match `T`) |
-| Label / Help Text | Optional UI copy |
-| Max File Size (bytes) | Client-side limit before calling Apex (default 3,500,000) |
+| Property                  | Description                                                                                                         |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Target object type (`T`)  | Generic SObject type for the **Converted Records** output collection                                                |
+| DataWeave Script API Name | API name of the `.dwl` resource (no path or extension)                                                              |
+| Target Object API Name    | API name of the SObject type the script produces (must match `T`)                                                   |
+| Label / Help Text         | Optional UI copy                                                                                                    |
+| Upload Required           | When checked (default), users must upload and convert a CSV before continuing; when unchecked, they may skip upload |
+| Max File Size (bytes)     | Client-side limit before calling Apex (default 3,500,000)                                                           |
 
-| Output | Description |
-|--------|-------------|
-| Converted Records | `{T[]}` — rows from DataWeave (not saved) |
-| Record Count | Number of rows |
-| Conversion Complete | True after a successful run |
-| Error Message | Set when validation or conversion fails |
+| Output              | Description                               |
+| ------------------- | ----------------------------------------- |
+| Converted Records   | `{T[]}` — rows from DataWeave (not saved) |
+| Record Count        | Number of rows                            |
+| Conversion Complete | True after a successful run               |
+| Error Message       | Set when validation or conversion fails   |
 
-The component implements screen **validation**: users cannot proceed until a CSV is uploaded and converted successfully (or fix errors). Maximum CSV size on the server matches the client default (~3.5M characters).
+The component implements screen **validation** when **Upload Required** is enabled (default): users cannot proceed until a CSV is uploaded and converted successfully (or fix errors). Uncheck **Upload Required** to allow **Next** without a file; flow outputs stay empty unless a conversion succeeds—branch on **Conversion Complete** or **Record Count** downstream. Failed or in-progress conversions still block **Next** even when upload is optional. Maximum CSV size on the server matches the client default (~3.5M characters).
+
+**LWC quirk:** Boolean `@api` properties cannot default to `true` in code. The component treats `uploadRequired` as required when it is `true` or unset; only an explicit `false` makes upload optional.
 
 ### When to use it
 
-- Screen flows where admins or users upload CSV files and the flow creates or updates records in bulk  
-- Column mapping or cleansing logic maintained in **DataWeave** instead of Apex  
-- Prototypes and imports where you want transformation separate from DML  
+- Screen flows where admins or users upload CSV files and the flow creates or updates records in bulk
+- Column mapping or cleansing logic maintained in **DataWeave** instead of Apex
+- Prototypes and imports where you want transformation separate from DML
 
 ---
 
@@ -281,45 +284,45 @@ Design-time configuration uses **`RelatedListPicklist`**, an Apex dynamic pickli
 
 ### When to use it
 
-- Parent records with **many related rows** where the standard related list is slow or awkward to paginate through  
-- Record pages where you want a **fixed-height**, scrollable related list instead of expanding the page  
-- Any object with standard or custom child relationships exposed on the page layout  
+- Parent records with **many related rows** where the standard related list is slow or awkward to paginate through
+- Record pages where you want a **fixed-height**, scrollable related list instead of expanding the page
+- Any object with standard or custom child relationships exposed on the page layout
 
 The component uses **Lightning UI API** (`lightning/uiRelatedListApi`); users need read access to the parent record and the related records. Fields the user cannot see are requested as optional fields so the wire does not fail.
 
 ### App Builder properties
 
-| Property | Required | Description |
-|----------|----------|-------------|
-| Related List | Yes | Child relationship (from dynamic picklist) |
-| Title | No | Overrides the related list label |
-| Icon | No | SLDS icon name (e.g. `standard:account`); blank uses object theme |
-| Records per Load | No | Page size for each fetch (default 50, max 1999) |
-| Height (px) | No | Height of the scrollable datatable area (default 400) |
+| Property         | Required | Description                                                       |
+| ---------------- | -------- | ----------------------------------------------------------------- |
+| Related List     | Yes      | Child relationship (from dynamic picklist)                        |
+| Title            | No       | Overrides the related list label                                  |
+| Icon             | No       | SLDS icon name (e.g. `standard:account`); blank uses object theme |
+| Records per Load | No       | Page size for each fetch (default 50, max 1999)                   |
+| Height (px)      | No       | Height of the scrollable datatable area (default 400)             |
 
 `recordId` and `objectApiName` are supplied automatically on record pages.
 
 ### Behavior notes
 
-- Registers with **Lightning Refresh** so list data can reload when the page refresh event fires  
-- **Delete** uses `lightning/uiRecordApi` with a confirmation dialog; count refreshes after delete  
-- Count display uses `getRelatedListCount` with a max of 2000; counts above that show as `2000+`  
+- Registers with **Lightning Refresh** so list data can reload when the page refresh event fires
+- **Delete** uses `lightning/uiRecordApi` with a confirmation dialog; count refreshes after delete
+- Count display uses `getRelatedListCount` with a max of 2000; counts above that show as `2000+`
 
 ---
 
 ## Repository layout
 
-| Path | Contents |
-|------|----------|
-| `packages/get-record-type-id/` | Apex invocable + tests for record type lookup |
-| `packages/get-picklist-values/` | Apex invocable + tests for picklist lookup |
-| `packages/find-possible-duplicates/` | Apex invocable + tests for duplicate detection |
-| `packages/split-text/` | Apex invocable + tests for splitting text into collections |
-| `packages/csv-dataweave-dropzone/` | Flow screen LWC, Apex, sample DataWeave script + tests for CSV conversion |
-| `packages/infinite-related-list/` | Record page LWC + Apex dynamic picklist + tests for infinite related list |
-| `config/project-scratch-def.json` | Scratch org definition (includes Person Accounts for tests) |
-| `scripts/package/` | Optional shell helpers for Dev Hub packaging |
-| `docs/PACKAGING.md` | 2GP version numbering (major.minor.patch.build) and when to bump patch vs build |
+| Path                                 | Contents                                                                        |
+| ------------------------------------ | ------------------------------------------------------------------------------- |
+| `packages/get-record-type-id/`       | Apex invocable + tests for record type lookup                                   |
+| `packages/get-picklist-values/`      | Apex invocable + tests for picklist lookup                                      |
+| `packages/find-possible-duplicates/` | Apex invocable + tests for duplicate detection                                  |
+| `packages/split-text/`               | Apex invocable + tests for splitting text into collections                      |
+| `packages/csv-dataweave-dropzone/`   | Flow screen LWC, Apex, sample DataWeave script + tests for CSV conversion       |
+| `packages/infinite-related-list/`    | Record page LWC + Apex dynamic picklist + tests for infinite related list       |
+| `config/project-scratch-def.json`    | Scratch org definition (includes Person Accounts for tests)                     |
+| `scripts/package/`                   | Optional shell helpers for Dev Hub packaging                                    |
+| `docs/PACKAGING.md`                  | 2GP version numbering (major.minor.patch.build) and when to bump patch vs build |
 
 ---
 
@@ -367,14 +370,14 @@ sf package install --package "InfiniteRelatedList@0.1.0-1" --wait 20 --target-or
 
 **Install in the browser** — open the link while logged into the org where you want the package (or sign in when prompted). Replace `p0` with the subscriber package version Id (`04t…`) from `packageAliases` in `sfdx-project.json` when you publish a new version.
 
-| Package | Production (`login.salesforce.com`) | Sandbox (`test.salesforce.com`) |
-|---------|-------------------------------------|----------------------------------|
-| Get Record Type ID `1.0.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc52IAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc52IAA) |
-| Get Picklist Values `1.0.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc57IAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc57IAA) |
+| Package                            | Production (`login.salesforce.com`)                                                          | Sandbox (`test.salesforce.com`)                                                             |
+| ---------------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Get Record Type ID `1.0.0.1`       | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc52IAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc52IAA) |
+| Get Picklist Values `1.0.0.1`      | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc57IAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc57IAA) |
 | Find Possible Duplicates `1.1.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5HIAQ) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5HIAQ) |
-| Split Text `1.0.1.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5gIAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5gIAA) |
-| CSV DataWeave Dropzone `0.1.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5lIAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5lIAA) |
-| Infinite Related List `0.1.0.1` | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5qIAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5qIAA) |
+| Split Text `1.0.1.1`               | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5gIAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5gIAA) |
+| CSV DataWeave Dropzone `0.1.0.1`   | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5lIAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5lIAA) |
+| Infinite Related List `0.1.0.1`    | [Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5qIAA) | [Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHs000000rc5qIAA) |
 
 **Create new packages in Dev Hub** (once per package):
 
